@@ -1,3 +1,4 @@
+import { PrivateApiFailure } from './private-api-error';
 import { inject, Injectable, signal } from '@angular/core';
 import { AuthApi } from './auth-api.service';
 import { Account, AuthFailure, LoginResponse, MessageResponse, Registration, TokenPair } from './auth.contracts';
@@ -14,6 +15,7 @@ export class AuthSession {
   readonly flowEmail = signal('');
   readonly notice = signal('');
   get authenticated() { return !!this.access && !!this.account(); }
+  get identityEpoch() { return this.epoch; }
   get canReset() { return !!this.resetGrant; }
   private accept(pair: TokenPair) {
     if (typeof pair.accessToken !== 'string' || !pair.accessToken || typeof pair.refreshToken !== 'string' || !/^[a-f0-9]{128}$/.test(pair.refreshToken)) throw new AuthFailure('protocol');
@@ -69,6 +71,25 @@ export class AuthSession {
     if (epoch !== this.epoch) throw new AuthFailure('expired');
     if (!result.id || !result.email || !result.username) throw new AuthFailure('protocol');
     this.account.set(result); return result;
+  }
+  async privateRequest(method:'GET'|'POST'|'PATCH',path:string,body?:unknown):Promise<unknown> {
+    await this.profile();const epoch=this.epoch;const access=this.access;
+    if(!access)throw new PrivateApiFailure(401,'SESSION_UNAVAILABLE');
+    try {
+      const result=await this.api.privateRequest(method,path,body,access);
+      if(epoch!==this.epoch)throw new PrivateApiFailure(401,'SESSION_CHANGED');return result;
+    }catch(error){
+      if(epoch!==this.epoch)throw new PrivateApiFailure(401,'SESSION_CHANGED');
+      if(error instanceof PrivateApiFailure && error.status===401){
+        // Safe reads only; a protected mutation is never replayed.
+        if(method==='GET'){
+          try {if(access===this.access)await this.rotate();if(epoch!==this.epoch||!this.access)throw new PrivateApiFailure(401,'SESSION_CHANGED');const result=await this.api.privateRequest(method,path,body,this.access);if(epoch!==this.epoch)throw new PrivateApiFailure(401,'SESSION_CHANGED');return result;}
+          catch(retry){if(epoch===this.epoch && retry instanceof PrivateApiFailure && retry.status===401)this.clear();throw retry;}
+        }
+        this.clear();
+      }
+      throw error;
+    }
   }
   async social<T>(method:'GET'|'POST'|'PATCH'|'DELETE',path:string,body?:unknown):Promise<T> {
     await this.profile(); const epoch=this.epoch;
