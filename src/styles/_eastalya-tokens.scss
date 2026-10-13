@@ -1,0 +1,18 @@
+// Opt-in tokens: importing this file does not change existing components.
+@mixin tokens {
+  --eastalya-primary: #6d28d9;
+  --eastalya-lavender: #ede9fe;
+  --eastalya-surface: #ffffff;
+  --eastalya-text: #111827;
+  --eastalya-muted: #4b5563;
+  --eastalya-focus: #7c3aed;
+  --eastalya-radius: 12px;
+  --eastalya-space-unit: 4px;
+}
+@mixin dark-tokens {
+  --eastalya-primary: #c4b5fd;
+  --eastalya-surface: #111827;
+  --eastalya-text: #f9fafb;
+  --eastalya-muted: #d1d5db;
+  --eastalya-focus: #c4b5fd;
+}

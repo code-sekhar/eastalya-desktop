@@ -1,0 +1,36 @@
+<main class="auth-shell" [attr.lang]="language()">
+  <section class="cosmic-story" aria-labelledby="brand-heading">
+    <a class="brand" routerLink="/signin" id="brand-heading">EASTALYA<span>People. Possibilities. You.</span></a>
+    <div class="orbit" aria-hidden="true"><span>✦</span></div>
+    <h2>A little cosmic.<br>A lot of connection.</h2>
+    <p>Meet your people. Astrology is optional — being yourself is enough.</p>
+  </section>
+  <section class="form-panel" aria-labelledby="form-heading">
+    <div class="form-top"><a routerLink="/signin" class="small-brand">EASTALYA</a><label>Language <select aria-label="Language" [value]="language()" (change)="changeLanguage($event)"><option value="en">English</option><option value="bn">বাংলা</option><option value="hi">हिन्दी</option></select></label></div>
+    <div class="form-content">
+      <h1 id="form-heading">{{ t(mode) }}</h1>
+      @if (mode === 'signup') { <p>Start with your account. Birth details are optional and can wait.</p> }
+      <p class="notice" aria-live="polite">{{ notice() }}</p>
+      <form [formGroup]="form" (ngSubmit)="submit()" [attr.aria-busy]="busy()" novalidate>
+        @if (mode === 'signup') {
+          <label for="displayName">{{ t('displayName') }}</label><input id="displayName" formControlName="displayName" autocomplete="nickname" [attr.aria-invalid]="invalid('displayName')" aria-describedby="name-help"><small id="name-help">2–100 characters</small>
+          <label for="username">{{ t('username') }}</label><input id="username" formControlName="username" autocomplete="username" [attr.aria-invalid]="invalid('username')" aria-describedby="username-help"><small id="username-help">3–30 letters, numbers or underscores</small>
+        }
+        @if (mode !== 'reset') {
+          <label for="email">{{ t('email') }}</label><input id="email" formControlName="email" type="email" autocomplete="email" spellcheck="false" [attr.aria-invalid]="invalid('email')" aria-describedby="email-help"><small id="email-help">Use your email address, including international characters.</small>
+        }
+        @if (form.controls.password.enabled) {
+          <label for="password">{{ t('password') }}</label><div class="password-row"><input id="password" formControlName="password" [type]="visible() ? 'text' : 'password'" [autocomplete]="mode === 'signin' ? 'current-password' : 'new-password'" [attr.aria-invalid]="invalid('password')" aria-describedby="password-help"><button class="visibility" type="button" [attr.aria-pressed]="visible()" (click)="visible.set(!visible())">{{ t(visible() ? 'hide' : 'show') }}</button></div>
+          <small id="password-help">{{ mode === 'signin' ? 'Existing passwords can still sign in. Maximum 72 UTF-8 bytes.' : t('passwordPolicy') }}</small>
+        }
+        @if (form.controls.confirm.enabled) { <label for="confirm">{{ t('confirm') }}</label><input id="confirm" formControlName="confirm" [type]="visible() ? 'text' : 'password'" autocomplete="new-password" [attr.aria-invalid]="invalid('confirm')"> }
+        @if (form.controls.otp.enabled) { <label for="otp">{{ t('otp') }}</label><input id="otp" formControlName="otp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" [attr.aria-invalid]="invalid('otp')" aria-describedby="code-help"><small id="code-help">Codes expire. Wait for the email; request a new code if needed.</small> }
+        @if (message(); as key) { <p [attr.role]="failed() ? 'alert' : 'status'" class="feedback" [class.error]="failed()">{{ t(key) }}</p> }
+        <button type="submit" class="primary" [disabled]="busy()">{{ t(busy() ? 'busy' : 'submit') }}</button>
+        @if (mode === 'verify' || mode === 'code') { <button type="button" class="secondary" [disabled]="busy()" (click)="resend()">{{ t('resend') }}</button> }
+      </form>
+      <nav aria-label="Account help"><a routerLink="/signin">{{ t('signinLink') }}</a><a routerLink="/signup">{{ t('signupLink') }}</a><a routerLink="/forgot-password">{{ t('forgotLink') }}</a><a routerLink="/verify-email">{{ t('verifyLink') }}</a></nav>
+      <p class="session-note">{{ t('memory') }}</p>
+    </div>
+  </section>
+</main>

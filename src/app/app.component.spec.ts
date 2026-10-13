@@ -20,10 +20,10 @@ describe('AppComponent', () => {
     expect(app.title).toEqual('eastalya-admin');
   });
 
-  it('should render title', () => {
+  it('should render the route outlet', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, eastalya-admin');
+    expect(compiled.querySelector('router-outlet')).not.toBeNull();
   });
 });
