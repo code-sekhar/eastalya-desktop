@@ -9,7 +9,7 @@
     <div class="form-top"><a routerLink="/signin" class="small-brand">EASTALYA</a><label>Language <select aria-label="Language" [value]="language()" (change)="changeLanguage($event)"><option value="en">English</option><option value="bn">বাংলা</option><option value="hi">हिन्दी</option></select></label></div>
     <div class="form-content">
       <h1 id="form-heading">{{ t(mode) }}</h1>
-      @if (mode === 'signup') { <p>Start with your account. Birth details are optional and can wait.</p> }
+      @if (mode === 'signup') { <p>Create and verify your account first. Private astrology onboarding follows separately.</p> }
       <p class="notice" aria-live="polite">{{ notice() }}</p>
       <form [formGroup]="form" (ngSubmit)="submit()" [attr.aria-busy]="busy()" novalidate>
         @if (mode === 'signup') {
