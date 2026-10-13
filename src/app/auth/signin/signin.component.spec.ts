@@ -34,6 +34,12 @@ describe('SigninComponent', () => {
     expect(fixture.nativeElement.querySelector('#password').type).toBe('text');
   });
 
+  it('clears entered OTP on navigation teardown', () => {
+    component.form.controls.otp.setValue('123456');
+    component.ngOnDestroy();
+    expect(component.form.controls.otp.value).toBe('');
+  });
+
   it('should create', () => {
     expect(component).toBeTruthy();
   });

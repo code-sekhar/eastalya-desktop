@@ -1,5 +1,5 @@
 import {LanguageState} from '../../core/i18n/language.service';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthSession } from '../../core/auth/auth-session.service';
@@ -8,7 +8,9 @@ import { copy, CopyKey, Language } from '../../core/auth/auth-copy';
 import { emailValidator, passwordValidator } from '../../core/auth/auth.validators';
 type Mode = 'signin' | 'signup' | 'verify' | 'forgot' | 'code' | 'reset';
 @Component({ selector: 'app-signin', imports: [ReactiveFormsModule, RouterLink], templateUrl: './signin.component.html', styleUrl: './signin.component.scss' })
-export class SigninComponent {
+export class SigninComponent implements OnDestroy {
+  ngOnDestroy() { this.form.controls.otp.reset(); }
+
   readonly session = inject(AuthSession);
   private readonly router = inject(Router);
   readonly mode: Mode = inject(ActivatedRoute).snapshot.data['mode'] as Mode ?? 'signin';
@@ -40,7 +42,7 @@ export class SigninComponent {
       const email = values.email.trim().toLowerCase();
       if (this.mode === 'signin') { await this.session.login(email, values.password); this.form.controls.password.reset(); await this.router.navigateByUrl('/account'); }
       else if (this.mode === 'signup') { await this.session.register({ email, username: values.username, displayName: values.displayName, password: values.password }); this.form.controls.password.reset(); this.form.controls.confirm.reset(); this.session.notice.set('neutral'); await this.router.navigateByUrl('/verify-email'); }
-      else if (this.mode === 'verify') { await this.session.verify(email, values.otp); this.session.notice.set('verified'); await this.router.navigateByUrl('/signin'); }
+      else if (this.mode === 'verify') { await this.session.verify(email, values.otp); this.form.controls.otp.reset(); this.session.notice.set('verified'); await this.router.navigateByUrl('/signin'); }
       else if (this.mode === 'forgot') { await this.session.forgot(email); this.session.notice.set('neutral'); await this.router.navigateByUrl('/verify-reset-otp'); }
       else if (this.mode === 'code') { await this.session.verifyReset(email, values.otp); this.form.controls.otp.reset(); await this.router.navigateByUrl('/reset-password'); }
       else { await this.session.reset(values.password); this.form.reset(); this.session.notice.set('resetDone'); await this.router.navigateByUrl('/signin'); }

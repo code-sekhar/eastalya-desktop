@@ -9,7 +9,7 @@ const { spawn } = require('node:child_process');
 const { setTimeout: delay } = require('node:timers/promises');
 
 async function main() {
-  const root = path.resolve('dist/eastalya-admin/browser');
+  const root = path.resolve(process.env.AUTH_TEST_BROWSER_DIR || 'dist/eastalya-admin/browser');
   const output = process.env.PHASE2A_CLIENTS === 'true' ? '/tmp/eastalya-phase2a-browser-evidence' : process.env.PHASE1G_CLIENTS === 'true' ? '/tmp/eastalya-phase1g-browser-evidence' : process.env.PHASE1F_CLIENTS === 'true' ? '/tmp/eastalya-phase1f-browser-evidence' : '/tmp/eastalya-phase1e-browser-evidence'; const label = process.env.PHASE2A_CLIENTS === 'true' ? 'phase2a' : process.env.PHASE1G_CLIENTS === 'true' ? 'phase1g' : process.env.PHASE1F_CLIENTS === 'true' ? 'phase1f' : 'phase1e';
   const backend = new URL(process.env.AUTH_TEST_API || '');
   assert.equal(backend.hostname, '127.0.0.1');
@@ -78,6 +78,7 @@ async function main() {
       await send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:false});
       for(const route of ['/signin','/signup','/verify-email','/forgot-password','/verify-reset-otp']){
         await navigate(route);
+        assert.equal(await evaluate("!!document.querySelector('.local-otp-inbox')"), false);
         const value=await evaluate("({route:location.pathname,overflow:document.documentElement.scrollWidth>innerWidth,labels:[...document.querySelectorAll('input')].every(e=>!!document.querySelector('label[for='+e.id+']')),viewport:!!document.querySelector('meta[name=viewport]')})");
         assert.equal(value.route,route);assert.equal(value.overflow,false);assert.equal(value.labels,true);assert.equal(value.viewport,true);
         results.push({width,height,...value});
