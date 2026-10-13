@@ -17,6 +17,7 @@ export const routes: Routes = [
     ['signup', 'signup'], ['verify-email', 'verify'], ['forgot-password', 'forgot'],
     ['verify-reset-otp', 'code'], ['reset-password', 'reset'],
   ].map(([path, mode]) => ({ path, loadComponent: () => import('./auth/signin/signin.component').then(m => m.SigninComponent), data: { mode }, ...(mode === 'reset' ? { canActivate: [resetGuard] } : {}) })),
+  { path:'astrology/onboarding',canActivate:[authenticatedGuard],loadComponent:()=>import('./onboarding/onboarding.component').then(m=>m.OnboardingComponent) },
   { path:'feed',canActivate:[authenticatedGuard],loadComponent:()=>import('./feed/feed.component').then(m=>m.FeedComponent) },
   { path: 'account', canActivate: [authenticatedGuard], loadComponent: () => import('./auth/account/account.component').then(m => m.AccountComponent) },
   { path: 'profile/settings', canActivate: [authenticatedGuard], loadComponent: () => import('./profiles/profile-settings.component').then(m=>m.ProfileSettingsComponent), data:{astrology:false} },

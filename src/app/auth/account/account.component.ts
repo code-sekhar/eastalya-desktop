@@ -6,8 +6,8 @@ import { copy } from '../../core/auth/auth-copy';
 @Component({ selector: 'app-account', imports: [RouterLink], template: `
 <main class="account"><a routerLink="/account" class="brand">EASTALYA</a>
 @if (session.account(); as account) {
-<h1>Your account</h1><nav><a routerLink="/feed">Home feed</a> · <a routerLink="/privacy">Privacy lifecycle</a> · <a routerLink="/profile/settings">Edit profile &amp; privacy</a> · <a routerLink="/astrology/settings">Optional astrology</a></nav><p>{{ account.profile?.displayName || account.username }}</p><p>{{ account.email }}</p><p>&#64;{{ account.username }}</p>
-<p>Birth details are optional. Your private account is visible here only to you.</p>
+<h1>Your account</h1><nav><a routerLink="/feed">Home feed</a> · <a routerLink="/privacy">Privacy lifecycle</a> · <a routerLink="/profile/settings">Edit profile &amp; privacy</a> · <a routerLink="/astrology/settings">Astrology settings</a> · <a routerLink="/astrology/onboarding">Astrology onboarding</a></nav><p>{{ account.profile?.displayName || account.username }}</p><p>{{ account.email }}</p><p>&#64;{{ account.username }}</p>
+<p>Account creation is birth-free. Astrology onboarding is a separate private step; social enforcement is currently inactive. Your private account is visible here only to you.</p>
 <button (click)="load()" [disabled]="busy()">Reload profile</button>
 <button (click)="logout(false)" [disabled]="busy()">Sign out</button><button (click)="logout(true)" [disabled]="busy()">Sign out from all devices</button>
 } @else { <h1>Session ended</h1><a routerLink="/signin">Sign in again</a> }
