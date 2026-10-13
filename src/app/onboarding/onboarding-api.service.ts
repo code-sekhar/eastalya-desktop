@@ -8,7 +8,7 @@ export class OnboardingApi {
  private readonly session=inject(AuthSession);
  private async request<T>(method:'GET'|'POST'|'PATCH',path:string,decode:(x:unknown)=>T,input?:unknown):Promise<T> {
   try{return decode(await this.session.privateRequest(method,'users/me/'+path,input));}
-  catch(error){if(error instanceof AuthFailure){throw new PrivateApiFailure(error.kind==='expired'||error.kind==='credentials'?401:error.kind==='rate'?429:error.kind==='unavailable'?503:0,error.kind==='rate'?'RATE_LIMITED':error.kind==='expired'||error.kind==='credentials'?'SESSION_UNAVAILABLE':error.kind==='unavailable'?'DEPENDENCY_UNAVAILABLE':'NETWORK_UNCERTAIN');}throw PrivateApiFailure.from(error);}
+  catch(error){if(error instanceof AuthFailure){throw new PrivateApiFailure(error.kind==='expired'||error.kind==='credentials'?401:error.kind==='rate'?429:error.kind==='unavailable'?503:0,error.kind==='rate'?'RATE_LIMITED':error.kind==='expired'||error.kind==='credentials'?'SESSION_UNAVAILABLE':error.kind==='unavailable'?'DEPENDENCY_UNAVAILABLE':error.kind==='protocol'?'PROTOCOL':'NETWORK_UNCERTAIN');}throw PrivateApiFailure.from(error);}
  }
  notice(p:C.Purpose){return this.request('GET','consent/notices/'+p,x=>C.decodeNotice(x,p));}
  consent(p:C.Purpose){return this.request('GET','consent/'+p,x=>C.decodeConsent(x,p));}
